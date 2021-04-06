@@ -30,14 +30,14 @@ class Game {
         return this.history[frameIndex].rolls.reduce((a, b) => a + b, 0)
     }
 
-    isPrevSpare(frameIndex) {
-        const frame = this.history[frameIndex - 1];
-        return frame && frame.rolls.length === 2 && this.getFrameScore(frameIndex - 1) === 10
+    isSpare(frameIndex) {
+        const frame = this.history[frameIndex];
+        return frame && frame.rolls.length === 2 && this.getFrameScore(frameIndex) === 10
     }
 
-    isPrevStrike(frameIndex) {
-        const frame = this.history[frameIndex - 1];
-        return frame && frame.rolls.length === 1 && this.getFrameScore(frameIndex - 1) === 10
+    isStrike(frameIndex) {
+        const frame = this.history[frameIndex];
+        return frame && frame.rolls.length === 1 && this.getFrameScore(frameIndex) === 10
     }
 
     getScore() {
@@ -45,12 +45,16 @@ class Game {
             if (!currentValue.rolls.length) return accumulator
             let current = this.getFrameScore(index)
 
-            if (this.isPrevSpare(index)) { // spare
+            if (this.isSpare(index - 1)) { // spare
                 current += currentValue.rolls[0];
             }
 
-            if (this.isPrevStrike(index)) { // strike
-                current += this.getFrameScore(index);
+            if (this.isStrike(index - 1)) { // strike
+                if (this.isStrike(index)) {
+                    current += current + this.history[index + 1].rolls[0]
+                } else {
+                    current *= 2;
+                }
             }
 
             return accumulator + current;
@@ -122,6 +126,7 @@ describe("Game", () => {
     it("2 strike подряд", () => {
         makeStrike()
         makeStrike()
+        manyRolls(3, 0)
         game.getScore().should.be.eq(30);
     });
 
@@ -137,6 +142,11 @@ describe("Game", () => {
         game.getScore().should.be.eq(62);
     });
 
+    it("все strike", () => {
+        manyRolls(12, 10);
+        game.getScore().should.be.eq(300);
+    });
+
     function makeSpare() {
         game.roll(4)
         game.roll(6)
@@ -145,6 +155,12 @@ describe("Game", () => {
 
     function makeStrike() {
         game.roll(10)
+    }
+
+    function manyRolls(count, pins) {
+        for (let i = 0; i < count; i++) {
+            game.roll(pins);
+        }
     }
 
     beginAndEndWithReporting();
