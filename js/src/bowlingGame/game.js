@@ -36,16 +36,14 @@ class Game {
         return frame && frame.rolls.length === 2 && this.getFrameScore(frameIndex - 1) === 10
     }
 
-    getSpareBonus(frameIndex) {
-        return this.history[frameIndex].rolls.reduce((a, b) => a + b, 0)
-    }
-
     getScore() {
         return this.history.reduce((accumulator, currentValue, index) => {
             let current = this.getFrameScore(index)
+
             if (this.isPrevSpare(index)) { // spare
                 current += currentValue.rolls[0];
             }
+
             return accumulator + current;
         }, 0);
     }
@@ -77,6 +75,17 @@ describe("Game", () => {
         game.roll(3);
         game.getScore().should.be.eq(16);
     });
+
+    it("2 spare подряд", () => {
+        const game = new Game();
+        game.roll(2);
+        game.roll(8);
+        game.roll(3);
+        game.roll(7);
+        game.getScore().should.be.eq(23);
+    });
+
+
 
     beginAndEndWithReporting();
 });
