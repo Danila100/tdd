@@ -100,7 +100,7 @@ describe("Game", () => {
         game.getScore().should.be.eq(33 + a);
     });
 
-    it("2 spare подряд и затем простые броски", () => {
+    it("2 spare среди простых бросков", () => {
         game.roll(2);
         game.roll(4);
         makeSpare()
@@ -123,6 +123,18 @@ describe("Game", () => {
         makeStrike()
         makeStrike()
         game.getScore().should.be.eq(30);
+    });
+
+    it("2 strike среди простых бросков", () => {
+        game.roll(2);
+        game.roll(4);
+        makeStrike()
+        game.roll(4);
+        game.roll(5);
+        makeStrike()
+        game.roll(4);
+        game.roll(5);
+        game.getScore().should.be.eq(62);
     });
 
     function makeSpare() {
