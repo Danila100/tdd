@@ -9,8 +9,7 @@ class Game {
     constructor() {
         this.frameIndex = 0;
         this.history = [{
-            rolls: [],
-            score: 0
+            rolls: []
         }];
     }
 
@@ -24,7 +23,7 @@ class Game {
 
     frameUp() {
         this.frameIndex++;
-        this.history[this.frameIndex] = {rolls: [], score: 0};
+        this.history[this.frameIndex] = {rolls: []};
     }
 
     getFrameScore(frameIndex) {
@@ -38,6 +37,7 @@ class Game {
 
     getScore() {
         return this.history.reduce((accumulator, currentValue, index) => {
+            if (!currentValue.rolls.length) return accumulator
             let current = this.getFrameScore(index)
 
             if (this.isPrevSpare(index)) { // spare
@@ -84,7 +84,6 @@ describe("Game", () => {
         game.roll(7);
         game.getScore().should.be.eq(23);
     });
-
 
 
     beginAndEndWithReporting();
