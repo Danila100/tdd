@@ -103,10 +103,21 @@ describe("Game", () => {
         game.getScore().should.be.eq(52);
     });
 
+    it("strike", () => {
+        makeStrike()
+        game.roll(1);
+        game.roll(3);
+        game.getScore().should.be.eq(18);
+    });
+
     function makeSpare() {
         game.roll(4)
         game.roll(6)
         return [4, 6]
+    }
+
+    function makeStrike() {
+        game.roll(10)
     }
 
     beginAndEndWithReporting();
