@@ -85,6 +85,16 @@ describe("Game", () => {
         game.getScore().should.be.eq(23);
     });
 
+    it("2 spare подряд и затем простые броски", () => {
+        const game = new Game();
+        game.roll(2);
+        game.roll(8);
+        game.roll(3);
+        game.roll(7);
+        game.roll(4);
+        game.roll(5);
+        game.getScore().should.be.eq(36);
+    });
 
     beginAndEndWithReporting();
 });
