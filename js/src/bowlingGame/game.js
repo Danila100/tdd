@@ -8,32 +8,43 @@ import {beginAndEndWithReporting} from "./infrastructure/reportingTest";
 class Game {
     constructor() {
         this.frameIndex = 0;
-        this.history = [{rolls: []}];
+        this.history = [{
+            rolls: [],
+            score: 0
+        }];
     }
 
     roll(pins) {
         const {rolls} = this.history[this.frameIndex];
         rolls.push(pins);
-        if (rolls.length > 2) {
+        if (rolls.length > 1) {
             this.frameUp();
         }
     }
 
     frameUp() {
         this.frameIndex++;
-        this.history[this.frameIndex] = {rolls: []};
+        this.history[this.frameIndex] = {rolls: [], score: 0};
     }
 
-    getFrameScore(rolls) {
-        return rolls.reduce((a, b) => a + b, 0)
+    getFrameScore(frameIndex) {
+        return this.history[frameIndex].rolls.reduce((a, b) => a + b, 0)
+    }
+
+    isPrevSpare(frameIndex) {
+        const frame = this.history[frameIndex - 1];
+        return frame && frame.rolls.length === 2 && this.getFrameScore(frameIndex - 1) === 10
+    }
+
+    getSpareBonus(frameIndex) {
+        return this.history[frameIndex].rolls.reduce((a, b) => a + b, 0)
     }
 
     getScore() {
-        return this.history.reduce((accumulator, currentValue) => {
-            let current = this.getFrameScore(currentValue.rolls)
-
-            if (currentValue.rolls.length === 2 && current === 10) { // spare
-                current ++;
+        return this.history.reduce((accumulator, currentValue, index) => {
+            let current = this.getFrameScore(index)
+            if (this.isPrevSpare(index)) { // spare
+                current += currentValue.rolls[0];
             }
             return accumulator + current;
         }, 0);
