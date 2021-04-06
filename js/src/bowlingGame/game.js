@@ -16,7 +16,7 @@ class Game {
     roll(pins) {
         const {rolls} = this.history[this.frameIndex];
         rolls.push(pins);
-        if (rolls.length > 1) {
+        if (rolls.length > 1 || this.getFrameScore(this.frameIndex) === 10) {
             this.frameUp();
         }
     }
@@ -35,6 +35,11 @@ class Game {
         return frame && frame.rolls.length === 2 && this.getFrameScore(frameIndex - 1) === 10
     }
 
+    isPrevStrike(frameIndex) {
+        const frame = this.history[frameIndex - 1];
+        return frame && frame.rolls.length === 1 && this.getFrameScore(frameIndex - 1) === 10
+    }
+
     getScore() {
         return this.history.reduce((accumulator, currentValue, index) => {
             if (!currentValue.rolls.length) return accumulator
@@ -42,6 +47,10 @@ class Game {
 
             if (this.isPrevSpare(index)) { // spare
                 current += currentValue.rolls[0];
+            }
+
+            if (this.isPrevStrike(index)) { // strike
+                current += this.getFrameScore(index);
             }
 
             return accumulator + current;
