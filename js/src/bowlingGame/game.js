@@ -50,51 +50,64 @@ class Game {
 }
 
 describe("Game", () => {
+    let game;
+
+    beforeEach(() => {
+        game = new Game();
+    })
+
     it("should have zero score before any rolls", () => {
-        const game = new Game();
         game.getScore().should.be.eq(0);
     });
 
     it("should have simple score after one roll", () => {
-        const game = new Game();
         game.roll(10);
         game.getScore().should.be.eq(10);
     });
 
     it("После двух простых бросков на 2 и 5 сумма очков 7", () => {
-        const game = new Game();
         game.roll(2);
         game.roll(5);
         game.getScore().should.be.eq(7);
     });
 
     it("spare", () => {
-        const game = new Game();
-        game.roll(2);
-        game.roll(8);
+        makeSpare();
         game.roll(3);
         game.getScore().should.be.eq(16);
     });
 
     it("2 spare подряд", () => {
-        const game = new Game();
-        game.roll(2);
-        game.roll(8);
-        game.roll(3);
-        game.roll(7);
-        game.getScore().should.be.eq(23);
+        makeSpare();
+        const [a,] = makeSpare()
+        game.getScore().should.be.eq(20 + a);
     });
 
     it("2 spare подряд и затем простые броски", () => {
-        const game = new Game();
-        game.roll(2);
-        game.roll(8);
-        game.roll(3);
-        game.roll(7);
+        makeSpare()
+        const [a,] = makeSpare()
         game.roll(4);
         game.roll(5);
-        game.getScore().should.be.eq(36);
+        game.getScore().should.be.eq(33 + a);
     });
+
+    it("2 spare подряд и затем простые броски", () => {
+        game.roll(2);
+        game.roll(4);
+        makeSpare()
+        game.roll(4);
+        game.roll(5);
+        makeSpare()
+        game.roll(4);
+        game.roll(5);
+        game.getScore().should.be.eq(52);
+    });
+
+    function makeSpare() {
+        game.roll(4)
+        game.roll(6)
+        return [4, 6]
+    }
 
     beginAndEndWithReporting();
 });
