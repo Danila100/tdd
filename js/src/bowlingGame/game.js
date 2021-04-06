@@ -119,6 +119,12 @@ describe("Game", () => {
         game.getScore().should.be.eq(18);
     });
 
+    it("2 strike подряд", () => {
+        makeStrike()
+        makeStrike()
+        game.getScore().should.be.eq(30);
+    });
+
     function makeSpare() {
         game.roll(4)
         game.roll(6)
