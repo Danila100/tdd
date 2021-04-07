@@ -40,21 +40,34 @@ class Game {
         return frame && frame.rolls.length === 1 && this.getFrameScore(frameIndex) === 10
     }
 
+    getSpareBonus(frameIndex) {
+        const nextFrame = this.history[frameIndex + 1]
+        return nextFrame.rolls.length ? nextFrame.rolls[0] : 0
+    }
+
+    getStrikeBonus(frameIndex) {
+        let score = 0;
+        if (!this.history[frameIndex + 1]) {
+            return 0
+        }
+        if (this.isStrike(frameIndex + 1)) {
+            score = this.getSpareBonus(frameIndex + 1)
+        }
+
+        return score + this.getFrameScore(frameIndex + 1)
+    }
+
     getScore() {
         return this.history.reduce((accumulator, currentValue, index) => {
-            if (!currentValue.rolls.length) return accumulator
+            if (!currentValue.rolls.length || index >= 10) return accumulator
             let current = this.getFrameScore(index)
 
-            if (this.isSpare(index - 1)) { // spare
-                current += currentValue.rolls[0];
+            if (this.isSpare(index)) { // spare
+                current += this.getSpareBonus(index)
             }
 
-            if (this.isStrike(index - 1)) { // strike
-                if (this.isStrike(index)) {
-                    current += current + this.history[index + 1].rolls[0]
-                } else {
-                    current *= 2;
-                }
+            if (this.isStrike(index)) { // strike
+                current += this.getStrikeBonus(index)
             }
 
             return accumulator + current;
@@ -143,7 +156,7 @@ describe("Game", () => {
     });
 
     it("все strike", () => {
-        manyRolls(12, 10);
+        manyRolls(12, 10)
         game.getScore().should.be.eq(300);
     });
 
